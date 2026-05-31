@@ -1,0 +1,187 @@
+/* ============================================================================
+   LandingPage.css — HoopLab landing page styles.
+   Theme variables at top; hoop + basketball graphic styles included.
+   ============================================================================ */
+.hll {
+  --gold: #ffd700;
+  --gold-light: #ffed4e;
+  --field-dark: #0a1f2e;
+  --field-mid: #1a472a;
+  --field-light: #2d5016;
+  --ball: #e8832b;      /* basketball orange — change to #ffd700 to go gold */
+
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 215, 0, 0.12) 0%, transparent 45%),
+    linear-gradient(to bottom, var(--field-dark) 0%, var(--field-mid) 55%, var(--field-light) 100%);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: white;
+  overflow-x: hidden;
+}
+
+/* ---- hero ---- */
+.hll-hero { position: relative; overflow: hidden; padding: 4.5rem 1.5rem 3.5rem; }
+.hll-hero-content { position: relative; z-index: 2; text-align: center; max-width: 760px; margin: 0 auto; }
+
+/* ---- basketball goal (hoop) ---- */
+.hll-hoop-board { fill: rgba(255, 255, 255, 0.04); stroke: rgba(255, 255, 255, 0.55); stroke-width: 2.5; }
+.hll-hoop-square { fill: none; stroke: rgba(255, 255, 255, 0.45); stroke-width: 2; }
+.hll-hoop-rim { fill: none; stroke: var(--ball); stroke-width: 3.5; }
+.hll-hoop-net { stroke: rgba(255, 255, 255, 0.5); stroke-width: 1.5; fill: none; }
+
+/* hoop placement: big + faded in the hero background, off to the right */
+.hll-hoop-bg {
+  position: absolute; z-index: 0; pointer-events: none;
+  width: 300px; height: 375px;
+  right: -10px; top: 50%; transform: translateY(-50%);
+  opacity: 0.22;
+}
+/* a smaller hoop in the final CTA */
+.hll-hoop-final {
+  position: absolute; z-index: 0; pointer-events: none;
+  width: 150px; height: 188px; left: -20px; bottom: -30px;
+  opacity: 0.15; transform: rotate(-8deg);
+}
+
+/* ---- basketballs ---- */
+.hll-ball-body { fill: none; stroke: var(--ball); stroke-width: 3; }
+.hll-ball-seam { stroke: var(--ball); stroke-width: 3; }
+.hll-ball { position: absolute; z-index: 1; pointer-events: none; }
+/* the "shot" ball near the rim */
+.hll-ball-shot { width: 64px; height: 64px; right: 70px; top: 70px; opacity: 0.85; }
+/* a faded ball in the lower-left */
+.hll-ball-corner { width: 120px; height: 120px; left: -30px; bottom: -30px; opacity: 0.1; transform: rotate(-20deg); }
+
+.hll-badge {
+  display: inline-block; background: rgba(255, 215, 0, 0.12);
+  border: 1px solid rgba(255, 215, 0, 0.4); color: var(--gold);
+  padding: 0.4rem 1rem; border-radius: 30px; font-size: 0.85rem;
+  font-weight: 600; margin-bottom: 1.5rem;
+}
+.hll-title {
+  font-size: 4.5rem; font-weight: 900; color: var(--gold);
+  letter-spacing: 2px; margin: 0 0 0.5rem; line-height: 1;
+  text-shadow: 4px 4px 12px rgba(0, 0, 0, 0.6);
+}
+.hll-subtitle { font-size: 1.6rem; font-weight: 700; margin: 0 0 1rem; }
+.hll-desc {
+  font-size: 1.1rem; color: rgba(255, 255, 255, 0.85);
+  line-height: 1.6; max-width: 540px; margin: 0 auto 2rem;
+}
+.hll-cta-row { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.5rem; }
+
+/* ---- buttons ---- */
+.hll-btn {
+  padding: 1.1rem 2.5rem; font-size: 1.15rem; font-weight: 800;
+  border-radius: 12px; cursor: pointer; text-transform: uppercase;
+  letter-spacing: 0.5px; transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  border: 2px solid transparent;
+}
+.hll-btn-primary {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+  color: var(--field-mid); box-shadow: 0 8px 24px rgba(255, 215, 0, 0.35);
+}
+.hll-btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(255, 215, 0, 0.5); }
+.hll-btn-secondary {
+  background: rgba(255, 255, 255, 0.08); color: white;
+  border-color: rgba(255, 255, 255, 0.3); backdrop-filter: blur(8px);
+}
+.hll-btn-secondary:hover { background: rgba(255, 255, 255, 0.16); border-color: var(--gold); transform: translateY(-3px); }
+.hll-btn-big { font-size: 1.3rem; padding: 1.3rem 3rem; position: relative; z-index: 2; }
+
+/* ---- stat strip ---- */
+.hll-stat-strip {
+  display: inline-flex; align-items: center; gap: 1.5rem;
+  background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(255, 215, 0, 0.25);
+  border-radius: 16px; padding: 1rem 1.75rem; backdrop-filter: blur(4px);
+}
+.hll-strip-item { display: flex; flex-direction: column; }
+.hll-strip-num { font-size: 1.8rem; font-weight: 900; color: var(--gold); font-family: "Impact", sans-serif; }
+.hll-strip-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255, 255, 255, 0.65); }
+.hll-strip-divider { width: 1px; height: 36px; background: rgba(255, 255, 255, 0.15); }
+
+/* ---- sections ---- */
+.hll-section { max-width: 960px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+.hll-section-title {
+  text-align: center; font-size: 2rem; font-weight: 900;
+  text-transform: uppercase; letter-spacing: 1px; margin: 0 0 2rem;
+}
+
+/* ---- basketball-seam divider ---- */
+.hll-divider { display: flex; justify-content: center; align-items: center; padding: 0.5rem 0; }
+.hll-divider::before, .hll-divider::after {
+  content: ""; height: 2px; flex: 1; max-width: 200px;
+  background: linear-gradient(90deg, transparent, rgba(232, 131, 43, 0.5));
+}
+.hll-divider::after { background: linear-gradient(90deg, rgba(232, 131, 43, 0.5), transparent); }
+.hll-divider-ball { width: 44px; height: 44px; margin: 0 1rem; opacity: 0.9; }
+
+/* ---- features ---- */
+.hll-feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.25rem; }
+.hll-feature {
+  background: rgba(0, 0, 0, 0.35); border: 2px solid rgba(255, 215, 0, 0.25);
+  border-radius: 16px; padding: 1.75rem; transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.hll-feature:hover { transform: translateY(-5px); border-color: var(--gold); box-shadow: 0 12px 30px rgba(255, 215, 0, 0.2); }
+.hll-feature-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+.hll-feature-title { font-size: 1.2rem; font-weight: 800; color: var(--gold); margin: 0 0 0.5rem; }
+.hll-feature-text { font-size: 0.95rem; color: rgba(255, 255, 255, 0.8); line-height: 1.5; margin: 0; }
+
+/* ---- steps ---- */
+.hll-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; }
+.hll-step { text-align: center; padding: 1.5rem; }
+.hll-step-num {
+  width: 56px; height: 56px; margin: 0 auto 1rem;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+  color: var(--field-mid); font-size: 1.6rem; font-weight: 900;
+  border-radius: 50%; font-family: "Impact", sans-serif;
+}
+.hll-step-title { font-size: 1.15rem; font-weight: 800; margin: 0 0 0.4rem; }
+.hll-step-text { font-size: 0.95rem; color: rgba(255, 255, 255, 0.8); margin: 0; }
+
+/* ---- faq ---- */
+.hll-faqs { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 0.75rem; }
+.hll-faq {
+  background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 12px; padding: 1.1rem 1.25rem; cursor: pointer;
+}
+.hll-faq-q { display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 1.05rem; }
+.hll-faq-toggle { color: var(--gold); font-size: 1.5rem; font-weight: 900; }
+.hll-faq-a { margin: 0.75rem 0 0; color: rgba(255, 255, 255, 0.8); line-height: 1.55; font-size: 0.95rem; }
+
+/* ---- final cta ---- */
+.hll-final {
+  position: relative; overflow: hidden;
+  text-align: center; padding: 3.5rem 1.5rem;
+  background: rgba(0, 0, 0, 0.3); margin-top: 1rem;
+}
+.hll-final-title { font-size: 2rem; font-weight: 900; margin: 0 0 1.75rem; position: relative; z-index: 2; }
+
+/* ---- footer ---- */
+.hll-footer {
+  text-align: center; padding: 2rem 1.5rem; color: var(--gold);
+  font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+  border-top: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+/* ---- responsive ---- */
+@media (max-width: 700px) {
+  .hll-hoop-bg { opacity: 0.12; right: -60px; }   /* tuck the hoop further back on small screens */
+  .hll-ball-shot { display: none; }                /* hide the shot ball so it doesn't crowd text */
+}
+@media (max-width: 600px) {
+  .hll-title { font-size: 3rem; }
+  .hll-subtitle { font-size: 1.25rem; }
+  .hll-btn { width: 100%; max-width: 320px; }
+  .hll-stat-strip { gap: 1rem; padding: 0.85rem 1.25rem; }
+  .hll-strip-num { font-size: 1.4rem; }
+}
+
+.hll-logo-img {
+  max-width: 380px;
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto 1.5rem;
+}

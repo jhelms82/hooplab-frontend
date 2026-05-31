@@ -1,0 +1,40 @@
+// ============================================================================
+// Constants.js — shared DATA used across the HoopLab components.
+// NOTE: Single source of truth for the court. Add or change a spot here and
+// EVERYTHING updates automatically — the court drawing, the logging buttons,
+// the hot/cold zones, and the per-spot percentages.
+// ============================================================================
+
+// NOTE: the daily makes goal (your son's 200-shot routine).
+export const DAILY_GOAL = 200;
+
+// NOTE: every shooting spot. x/y are coordinates inside the SVG court (Court.js).
+//   three: true  -> a 3-point spot
+//   three: false -> a 2-point (mid-range or rim) spot
+// short: the little label shown inside the circle (keep it 2–3 characters).
+//
+// Court orientation reminder: the basket is at the TOP (around x:150, y:38).
+// Bigger y = farther from the basket. "Behind the 3-point line" means the
+// corner/wing spots sit OUTSIDE the arc — corners pushed toward the sidelines,
+// wings pushed down and out.
+export const SPOTS = [
+  // ---- THREE-POINTERS (behind the arc) ----
+  { id: "lc3",  label: "Left Corner 3",  short: "LC3", x: 22,  y: 46,  three: true },  // moved out to the corner
+  { id: "lw3",  label: "Left Wing 3",    short: "LW3", x: 62,  y: 140, three: true },  // moved behind the arc
+  { id: "top3", label: "Top of Key 3",   short: "TOP", x: 150, y: 208, three: true },
+  { id: "rw3",  label: "Right Wing 3",   short: "RW3", x: 238, y: 140, three: true },  // moved behind the arc
+  { id: "rc3",  label: "Right Corner 3", short: "RC3", x: 278, y: 46,  three: true },  // moved out to the corner
+
+  // ---- MID-RANGE (inside the arc) ----
+  { id: "lbm",  label: "Left Baseline (Mid)",  short: "LBM", x: 80,  y: 56,  three: false },
+  { id: "le",   label: "Left Elbow (Mid)",     short: "LE",  x: 112, y: 104, three: false },
+  { id: "ft",   label: "Free Throw (Mid)",     short: "FT",  x: 150, y: 132, three: false },
+  { id: "re",   label: "Right Elbow (Mid)",    short: "RE",  x: 188, y: 104, three: false },
+  { id: "rbm",  label: "Right Baseline (Mid)", short: "RBM", x: 220, y: 56,  three: false },
+
+  // ---- AT THE RIM ----
+  { id: "paint", label: "Finish at Rim", short: "RIM", x: 150, y: 66, three: false },
+];
+
+// NOTE: the trainer's focus areas, shown as tappable tags on the log screen.
+export const FOCUS_AREAS = ["Catch and Shoot",  "Shooting Off Dribble", "Finishing", "Pick-and-Roll Reads", "Passing"];

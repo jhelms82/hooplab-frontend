@@ -1,0 +1,124 @@
+/* ============================================================================
+   Auth.css — shared styles for the Login and Signup pages.
+   Themed to match the HoopLab landing: gold/green, glass card, faded hoop.
+   Both Login.js and Signup.js import this one file.
+   ============================================================================ */
+.auth-page {
+  --gold: #ffd700;
+  --gold-light: #ffed4e;
+  --field-dark: #0a1f2e;
+  --field-mid: #1a472a;
+  --field-light: #2d5016;
+  --ball: #e8832b; /* basketball orange — change to #ffd700 to go gold */
+
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 215, 0, 0.12) 0%, transparent 45%),
+    linear-gradient(to bottom, var(--field-dark) 0%, var(--field-mid) 55%, var(--field-light) 100%);
+}
+
+/* faded basketball goal in the background, same as the landing hero */
+.auth-hoop {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  width: 320px;
+  height: 400px;
+  right: -40px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.13;
+}
+.auth-hoop-board { fill: rgba(255, 255, 255, 0.04); stroke: rgba(255, 255, 255, 0.55); stroke-width: 2.5; }
+.auth-hoop-square { fill: none; stroke: rgba(255, 255, 255, 0.45); stroke-width: 2; }
+.auth-hoop-rim { fill: none; stroke: var(--ball); stroke-width: 3.5; }
+.auth-hoop-net { stroke: rgba(255, 255, 255, 0.5); stroke-width: 1.5; fill: none; }
+
+/* the form card */
+.auth-container {
+  position: relative;
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(20px);
+  padding: 3rem;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  max-width: 500px;
+  width: 100%;
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  animation: authSlideIn 0.5s ease-out;
+}
+
+@keyframes authSlideIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* header */
+.auth-header { text-align: center; margin-bottom: 2rem; }
+.auth-icon { font-size: 4rem; margin-bottom: 1rem; animation: authPulse 2s infinite; }
+@keyframes authPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+.auth-header h2 {
+  font-size: 2.5rem; color: var(--gold); font-weight: 800;
+  margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 2px;
+}
+.auth-header p { color: rgba(255, 255, 255, 0.9); font-size: 1.1rem; }
+
+/* form */
+.auth-form { display: flex; flex-direction: column; gap: 1.5rem; }
+.form-group { display: flex; flex-direction: column; }
+.form-group label {
+  color: var(--gold); font-weight: 600; margin-bottom: 0.5rem;
+  font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;
+}
+.form-group input {
+  padding: 1rem; font-size: 1.1rem;
+  border: 2px solid rgba(255, 215, 0, 0.3); border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05); color: white; transition: all 0.3s;
+}
+.form-group input::placeholder { color: rgba(255, 255, 255, 0.4); }
+.form-group input:focus {
+  outline: none; border-color: var(--gold);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+/* submit button */
+.auth-submit-btn {
+  padding: 1.2rem; font-size: 1.3rem; font-weight: 800;
+  border: none; border-radius: 10px;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+  color: var(--field-mid); cursor: pointer;
+  text-transform: uppercase; letter-spacing: 1px; margin-top: 1rem;
+  transition: all 0.3s; box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+}
+.auth-submit-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(255, 215, 0, 0.6); }
+.auth-submit-btn:active { transform: translateY(-1px); }
+
+/* back button */
+.back-btn {
+  margin-top: 2rem; background: none; border: none;
+  color: rgba(255, 255, 255, 0.7); font-size: 1rem; cursor: pointer;
+  transition: all 0.3s; padding: 0.5rem;
+}
+.back-btn:hover { color: var(--gold); transform: translateX(-5px); }
+
+/* responsive */
+@media (max-width: 600px) {
+  .auth-hoop { opacity: 0.08; right: -80px; }
+  .auth-container { padding: 2rem; }
+  .auth-header h2 { font-size: 2rem; }
+  .auth-icon { font-size: 3rem; }
+  .form-group input { font-size: 1rem; }
+  .auth-submit-btn { font-size: 1.1rem; }
+}

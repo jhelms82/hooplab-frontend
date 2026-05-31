@@ -1,0 +1,238 @@
+/* ============================================================================
+   HoopLab.css — ONE stylesheet for the whole HoopLab feature.
+   NOTE: In Create React App, importing a CSS file makes its classes available
+   everywhere (CSS is global). So we import this once in HoopLab.js and every
+   component below can use these class names. Your Header/StatsCounter use one
+   CSS file each; here we share one because the components share a theme.
+
+   THEME VARIABLES: defined once here, used everywhere. Change a color in one
+   place and the whole app updates — the CSS version of the color constants we
+   had before.
+   ============================================================================ */
+.hooplab {
+  --gold: #ffd700;
+  --gold-light: #ffed4e;
+  --field-dark: #0a1f2e;
+  --field-mid: #1a472a;
+  --field-light: #2d5016;
+  --hot: #00b894;   /* shooting well */
+  --warm: #fdcb6e;  /* middling */
+  --cold: #d63031;  /* needs work */
+
+  min-height: 100vh;
+  background: linear-gradient(to bottom, var(--field-dark) 0%, var(--field-mid) 55%, var(--field-light) 100%);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: white;
+  padding: 1rem;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ---- header ---- */
+.hl-header {
+  text-align: center;
+  padding: 1rem;
+}
+.hl-logo {
+  font-size: 2rem; font-weight: 900; color: var(--gold);
+  letter-spacing: 1px; text-transform: uppercase;
+}
+.hl-tagline {
+  font-size: 0.85rem; color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase; letter-spacing: 2px;
+}
+
+/* ---- tabs ---- */
+.hl-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+.hl-tab {
+  flex: 1; padding: 0.7rem; border-radius: 10px;
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  background: rgba(0, 0, 0, 0.3); color: white;
+  font-weight: 700; cursor: pointer;
+  text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.85rem;
+}
+.hl-tab.is-active {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+  color: var(--field-mid); border-color: var(--gold);
+}
+
+/* ---- session bar + daily goal ring ---- */
+.hl-session-bar {
+  display: flex; align-items: center; gap: 1rem;
+  background: rgba(0, 0, 0, 0.4); border: 2px solid var(--gold);
+  border-radius: 16px; padding: 1rem; margin-bottom: 0.75rem;
+}
+.hl-ring-wrap { display: flex; flex-direction: column; align-items: center; }
+.hl-ring-label {
+  font-size: 0.7rem; color: var(--gold); text-transform: uppercase;
+  letter-spacing: 1px; margin-top: 0.25rem;
+}
+.hl-ring-track { stroke: rgba(255, 255, 255, 0.12); }
+.hl-ring-fill { stroke: var(--gold); }
+.hl-session-stats { display: flex; flex: 1; justify-content: space-around; }
+.hl-stat-mini { text-align: center; }
+.hl-stat-mini-label {
+  font-size: 0.7rem; color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.hl-stat-mini-value {
+  font-size: 1.8rem; font-weight: 900; font-family: "Impact", sans-serif;
+}
+.hl-gold { color: var(--gold); }
+
+/* ---- date row ---- */
+.hl-date-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+.hl-date-label {
+  font-size: 0.8rem; color: var(--gold); text-transform: uppercase;
+  letter-spacing: 1px; font-weight: 700;
+}
+.hl-date-input {
+  flex: 1; padding: 0.6rem; border-radius: 8px;
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  background: rgba(255, 255, 255, 0.07); color: white;
+}
+
+/* ---- court ---- */
+.hl-court-wrap { margin-bottom: 0.75rem; }
+.hl-court { max-width: 360px; display: block; margin: 0 auto; width: 100%; }
+.hl-court-surface { fill: rgba(0, 0, 0, 0.35); stroke: rgba(255, 215, 0, 0.4); stroke-width: 2; }
+.hl-court-line { fill: none; stroke: rgba(255, 255, 255, 0.25); stroke-width: 1.5; }
+.hl-court-board { stroke: rgba(255, 255, 255, 0.5); stroke-width: 2; }
+.hl-court-hoop { fill: none; stroke: var(--gold); stroke-width: 2; }
+.hl-spot-text { font-size: 8px; font-weight: 700; fill: white; }
+.hl-spot-pct { font-size: 7px; font-weight: 700; fill: var(--gold); }
+
+/* spot circle states (log mode) */
+.hl-spot { stroke-width: 2; cursor: pointer; }
+.hl-spot--idle { fill: rgba(0, 0, 0, 0.55); stroke: rgba(255, 215, 0, 0.6); }
+.hl-spot--selected { fill: var(--gold); stroke: var(--gold-light); stroke-width: 3; }
+/* spot circle states (heat mode) */
+.hl-spot--heat { stroke: rgba(0, 0, 0, 0.4); cursor: default; }
+.hl-spot--hot { fill: var(--hot); }
+.hl-spot--warm { fill: var(--warm); }
+.hl-spot--cold { fill: var(--cold); }
+.hl-spot--empty { fill: rgba(255, 255, 255, 0.15); }
+/* dark text when sitting on a bright heat circle */
+.hl-spot-text--dark, .hl-spot-pct--dark { fill: #0a1f2e; }
+
+/* ---- log panel (make/miss) ---- */
+.hl-log-panel {
+  background: rgba(0, 0, 0, 0.45); border: 2px solid var(--gold);
+  border-radius: 16px; padding: 1rem; margin-bottom: 0.75rem; text-align: center;
+}
+.hl-log-spot-name {
+  font-size: 1.2rem; font-weight: 900; color: var(--gold); text-transform: uppercase;
+}
+.hl-three-tag {
+  font-size: 0.7rem; background: var(--gold); color: var(--field-mid);
+  padding: 0.1rem 0.4rem; border-radius: 6px; vertical-align: middle;
+}
+.hl-log-spot-stat {
+  font-size: 1.4rem; font-weight: 900; font-family: "Impact", sans-serif;
+  margin: 0.4rem 0 0.8rem;
+}
+.hl-log-spot-pct { color: var(--gold); }
+.hl-shot-btns { display: flex; gap: 0.6rem; }
+.hl-make-btn, .hl-miss-btn, .hl-undo-btn {
+  padding: 1.1rem; border-radius: 12px; color: white;
+  font-weight: 900; font-size: 1.2rem; cursor: pointer; border: none;
+}
+.hl-make-btn { flex: 2; background: var(--hot); }
+.hl-miss-btn { flex: 2; background: var(--cold); }
+.hl-undo-btn {
+  flex: 1; border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ---- empty states ---- */
+.hl-empty-panel {
+  text-align: center; padding: 1.5rem; color: rgba(255, 255, 255, 0.6);
+  background: rgba(0, 0, 0, 0.3); border-radius: 16px; margin-bottom: 0.75rem;
+  border: 2px dashed rgba(255, 215, 0, 0.2);
+}
+.hl-empty-big {
+  text-align: center; padding: 3rem 1rem; color: rgba(255, 255, 255, 0.6); line-height: 1.6;
+}
+
+/* ---- focus tags ---- */
+.hl-focus-block {
+  background: rgba(0, 0, 0, 0.35); border-radius: 14px; padding: 1rem;
+  margin-bottom: 0.75rem; border: 2px solid rgba(255, 215, 0, 0.2);
+}
+.hl-focus-title {
+  font-size: 0.8rem; color: var(--gold); text-transform: uppercase;
+  letter-spacing: 1px; font-weight: 700; margin-bottom: 0.6rem;
+}
+.hl-focus-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.hl-focus-chip {
+  padding: 0.5rem 0.9rem; border-radius: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.06); color: white;
+  font-weight: 600; cursor: pointer; font-size: 0.85rem;
+}
+.hl-focus-chip.is-active { background: var(--gold); color: var(--field-mid); border-color: var(--gold); }
+
+/* ---- save button ---- */
+.hl-save-btn {
+  width: 100%; padding: 1.1rem; border-radius: 12px; border: none;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+  color: var(--field-mid); font-weight: 900; font-size: 1.1rem;
+  text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
+}
+
+/* ---- progress: big stats ---- */
+.hl-stat-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem; margin-bottom: 0.75rem;
+}
+.hl-big-stat {
+  background: rgba(0, 0, 0, 0.4); border: 2px solid rgba(255, 215, 0, 0.25);
+  border-radius: 14px; padding: 1rem; text-align: center;
+}
+.hl-big-stat.is-gold { background: rgba(255, 215, 0, 0.12); border-color: var(--gold); }
+.hl-big-stat-value { font-size: 2rem; font-weight: 900; font-family: "Impact", sans-serif; }
+.hl-big-stat-label {
+  font-size: 0.75rem; color: var(--gold); text-transform: uppercase;
+  letter-spacing: 1px; margin-top: 0.2rem;
+}
+
+/* ---- panels + charts ---- */
+.hl-chart-panel {
+  background: rgba(0, 0, 0, 0.4); border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 16px; padding: 1rem; margin-bottom: 0.75rem;
+}
+.hl-panel-title {
+  font-size: 0.95rem; color: var(--gold); text-transform: uppercase;
+  letter-spacing: 1px; font-weight: 700; margin-bottom: 0.75rem;
+}
+.hl-chart { display: block; width: 100%; }
+.hl-chart-grid { stroke: rgba(255, 255, 255, 0.08); }
+.hl-chart-axis { fill: rgba(255, 255, 255, 0.4); font-size: 8px; }
+.hl-chart-line { fill: none; stroke: var(--gold); stroke-width: 2.5; }
+.hl-chart-dot { fill: var(--gold-light); stroke: var(--field-dark); stroke-width: 1; }
+
+/* ---- legend ---- */
+.hl-legend {
+  display: flex; flex-wrap: wrap; gap: 0.9rem;
+  justify-content: center; margin-top: 0.6rem;
+}
+.hl-legend-item {
+  font-size: 0.75rem; color: rgba(255, 255, 255, 0.8);
+  display: flex; align-items: center; gap: 0.3rem;
+}
+.hl-legend-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+
+/* ---- recent sessions list ---- */
+.hl-session-row {
+  display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08); flex-wrap: wrap;
+}
+.hl-session-date { font-weight: 700; min-width: 56px; }
+.hl-session-line { font-family: "Impact", sans-serif; font-size: 1rem; }
+.hl-session-pct {
+  background: rgba(255, 215, 0, 0.2); color: var(--gold);
+  padding: 0.15rem 0.5rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem;
+}
+.hl-session-focus {
+  font-size: 0.75rem; color: rgba(255, 255, 255, 0.55); flex: 1; text-align: right;
+}
