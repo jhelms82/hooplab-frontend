@@ -127,8 +127,8 @@ function HoopLab() {
     <div className="hooplab">
       <header className="hl-header">
         <img
-          src="/HoopLab_logo.png"
           alt="HoopLab"
+          src="/HoopLab_Header_Logo.png"
           style={{ maxWidth: '320px', width: '100%', height: 'auto' }}
         />
       </header>
