@@ -127,12 +127,11 @@ function HoopLab() {
     <div className="hooplab">
       <header className="hl-header">
         <img
+          src="/logo_no_background.png"
           alt="HoopLab"
-          src="/HoopLab_Header_Logo.png"
-          style={{ maxWidth: '320px', width: '100%', height: 'auto' }}
+          style={{ maxWidth: '200px', width: '100%', height: 'auto', display: 'block', margin: '0 auto' }}
         />
       </header>
-
       {errorMsg && (
         <p style={{ textAlign: "center", color: "#ff7675" }}>{errorMsg}</p>
       )}
