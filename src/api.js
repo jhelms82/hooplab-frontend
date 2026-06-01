@@ -4,9 +4,10 @@
 // all over the place. Change the address once here, everywhere updates.
 // ============================================================================
 
-// NOTE: where the backend lives. When you deploy later, this becomes your
-// real server URL — and it's the ONLY line you change to point at production.
-const API_URL = "http://localhost:8000/api";
+// NOTE: where the backend lives.
+// On Vercel we set REACT_APP_API_URL to the live Render backend URL.
+// Locally there's no env variable, so it falls back to localhost.
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000/api";
 
 // NOTE: how long a login lasts before we make you sign in again.
 const TOKEN_LIFETIME_MS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
