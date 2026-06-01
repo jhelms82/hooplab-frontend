@@ -129,7 +129,7 @@ function HoopLab() {
         <img
           src="/logo_no_background.png"
           alt="HoopLab"
-          style={{ maxWidth: '260px', width: '100%', height: 'auto', display: 'block', margin: '0 auto' }}
+          style={{ maxWidth: '300px', width: '100%', height: 'auto', display: 'block', margin: '0 auto' }}
         />
       </header>
       {errorMsg && (
