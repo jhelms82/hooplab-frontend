@@ -9,11 +9,11 @@ function Signup({ onBack, onSignupSuccess }) {
     username: '',
     email: '',
     password: '',
+    confirmPassword: '',
     playerName: '',
   });
-  // NOTE: the backend account needs username/email/password. playerName is
-  // the kid being tracked — we collect it here, and we'll use it to create
-  // their first Player record once HoopLab talks to the API.
+  // NOTE: confirmPassword is new — the user types the password twice so we can
+  // catch typos before creating the account.
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -22,25 +22,45 @@ function Signup({ onBack, onSignupSuccess }) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // NOTE: checks the password meets our rules. Returns an error message
+  // string if something's wrong, or "" if it's all good.
+  const validatePassword = (pw) => {
+    if (pw.length < 8) return 'Password must be at least 8 characters.';
+    if (!/[0-9]/.test(pw)) return 'Password must include at least one number.';
+    return '';
+    // NOTE: /[0-9]/.test(pw) is true if the password contains any digit 0-9.
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
+    // NOTE: all fields filled?
     if (!formData.username || !formData.password || !formData.playerName) {
       setError('Please fill in all fields.');
       return;
     }
 
+    // NOTE: password rules (length + a number)
+    const pwError = validatePassword(formData.password);
+    if (pwError) {
+      setError(pwError);
+      return;
+    }
+
+    // NOTE: the two password fields must match
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+
     setLoading(true);
     try {
-      // NOTE: create the account on the backend, get a token back.
       const token = await signup(formData.username, formData.password, formData.email);
       saveToken(token);
-      // NOTE: stash the player name for later (when HoopLab creates the player).
       localStorage.setItem('hooplab_playername', formData.playerName);
       onSignupSuccess();
     } catch (err) {
-      // NOTE: most common cause is the username already being taken.
       setError('Could not create account. That username may be taken.');
     } finally {
       setLoading(false);
@@ -54,7 +74,7 @@ function Signup({ onBack, onSignupSuccess }) {
       <div className="auth-container">
         <div className="auth-header">
           <div className="auth-icon">⚡</div>
-          <h2>Join HoopLab</h2>
+          <h2>Join PureSwish</h2>
           <p>Create your account and start tracking shots</p>
         </div>
 
@@ -87,8 +107,20 @@ function Signup({ onBack, onSignupSuccess }) {
             <input
               type="password"
               name="password"
-              placeholder="Create a strong password"
+              placeholder="At least 8 characters, include a number"
               value={formData.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Confirm Password</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              placeholder="Re-type your password"
+              value={formData.confirmPassword}
               onChange={handleChange}
               required
             />
