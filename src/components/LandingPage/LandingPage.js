@@ -3,9 +3,9 @@ import "./LandingPage.css";
 // NOTE: styles live in LandingPage.css (separate file, your convention).
 
 // ============================================================================
-// LandingPage — HoopLab front door, basketball-goal themed.
+// LandingPage — PureSwish front door, basketball-goal themed.
 // A backboard + rim + net and a basketball sit faded in the hero background
-// (all SVG). Props match your other landing page:
+// (all SVG). Props:
 //   onLogin  -> login screen
 //   onSignup -> signup screen
 // ============================================================================
@@ -26,8 +26,8 @@ function LandingPage({ onLogin = () => {}, onSignup = () => {} }) {
   ];
 
   const faqs = [
-    { q: "Who is HoopLab for?", a: "Serious young players and the parents and trainers helping them improve. If a kid is putting up shots every day, HoopLab turns that work into visible progress." },
-    { q: "Is this like GameChanger?", a: "GameChanger is built for tracking games and teams. HoopLab is built for individual skill development — the daily shooting work that happens between games." },
+    { q: "Who is PureSwish for?", a: "Serious young players and the parents and trainers helping them improve. If a kid is putting up shots every day, PureSwish turns that work into visible progress." },
+    { q: "Is this like GameChanger?", a: "GameChanger is built for tracking games and teams. PureSwish is built for individual skill development — the daily shooting work that happens between games." },
     { q: "What do I need to use it?", a: "Just a phone and a hoop. Tap as you shoot. No extra equipment, no cameras, no setup." },
   ];
 
@@ -47,8 +47,8 @@ function LandingPage({ onLogin = () => {}, onSignup = () => {} }) {
 
           {/* logo replaces the old text title (its tagline covers the subtitle) */}
           <img
-            src="/logo_no_background.png"
-            alt="HoopLab"
+            src="/PureSwish_Logo_Transparent.png"
+            alt="PureSwish"
             className="hll-logo-img"
           />
 
@@ -129,7 +129,7 @@ function LandingPage({ onLogin = () => {}, onSignup = () => {} }) {
         <button className="hll-btn hll-btn-primary hll-btn-big" onClick={onSignup}>⚡ Start Free</button>
       </section>
 
-      <footer className="hll-footer">🏀 HoopLab · © 2026</footer>
+      <footer className="hll-footer">🏀 PureSwish · © 2026</footer>
     </div>
   );
 }

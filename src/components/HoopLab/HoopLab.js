@@ -116,7 +116,7 @@ function HoopLab() {
     return (
       <div className="hooplab">
         <header className="hl-header">
-          <div className="hl-logo">🏀 HoopLab</div>
+          <div className="hl-logo">🏀 PureSwish</div>
           <div className="hl-tagline">Loading…</div>
         </header>
       </div>
@@ -127,8 +127,8 @@ function HoopLab() {
     <div className="hooplab">
       <header className="hl-header">
         <img
-          src="/logo_no_background.png"
-          alt="HoopLab"
+          src="/PureSwish_Logo_Transparent.png"
+          alt="PureSwish"
           style={{ maxWidth: '400px', width: '100%', height: 'auto', display: 'block', margin: '0 auto' }}
         />
       </header>
