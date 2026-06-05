@@ -5,7 +5,7 @@ import { login, saveToken } from '../../api';
 //   login()    -> sends username/password to the backend, returns a token
 //   saveToken() -> stores that token in the browser
 
-function Login({ onBack, onLoginSuccess }) {
+function Login({ onBack, onLoginSuccess, onForgotPassword = () => {}, onForgotUsername = () => {} }) {
   const [username, setUsername] = useState('');
   // NOTE: the backend logs in by USERNAME (not email), so this field is the
   // username. We can switch to email-based login later if you want.
@@ -45,7 +45,7 @@ function Login({ onBack, onLoginSuccess }) {
         <div className="auth-header">
           <div className="auth-icon">🏀</div>
           <h2>Welcome Back</h2>
-          <p>Log in to your HoopLab account</p>
+          <p>Log in to your PureSwish account</p>
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
@@ -79,6 +79,17 @@ function Login({ onBack, onLoginSuccess }) {
             {loading ? 'Logging in…' : '🔐 Log In'}
           </button>
         </form>
+
+        {/* NOTE: recovery links — small text buttons under the form */}
+        <div className="auth-links">
+          <button type="button" className="auth-link" onClick={onForgotPassword}>
+            Forgot password?
+          </button>
+          <span className="auth-link-divider">·</span>
+          <button type="button" className="auth-link" onClick={onForgotUsername}>
+            Forgot username?
+          </button>
+        </div>
 
         <button className="back-btn" onClick={onBack}>
           ← Back to Home

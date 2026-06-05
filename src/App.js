@@ -1,78 +1,114 @@
 import { useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import './App.css';
 import LandingPage from './components/LandingPage/LandingPage';
 import Login from './components/Login/Login';
 import Signup from './components/Signup/Signup';
 import HoopLab from './components/HoopLab/HoopLab';
+import ForgotPassword from './components/ForgotPassword/ForgotPassword';
+import ResetPassword from './components/ResetPassword/ResetPassword';
+import ForgotUsername from './components/ForgotUsername/ForgotUsername';
 import { getToken, clearToken } from './api';
 // NOTE: getToken reads the saved login token; clearToken removes it (logout).
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('landing');
-
-  // NOTE: THIS is the fix. Instead of always starting logged out, we check
-  // for a saved token when the app first loads. If one exists, we start
-  // already logged in — so a refresh keeps you in instead of kicking you out.
-  // useState(() => ...) runs this check once, on first load.
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    return getToken() ? true : false;
-  });
-
-  const handleLogin = () => setCurrentPage('login');
-  const handleSignup = () => setCurrentPage('signup');
-  const handleBackToLanding = () => setCurrentPage('landing');
+  // NOTE: login state still works the same way — check for a saved token once
+  // on first load, so a refresh keeps you logged in.
+  const [isLoggedIn, setIsLoggedIn] = useState(() => (getToken() ? true : false));
 
   const handleLoginSuccess = () => setIsLoggedIn(true);
   const handleSignupSuccess = () => setIsLoggedIn(true);
-
   const handleLogout = () => {
-    // NOTE: now logout also CLEARS the token, so you're truly logged out
-    // (otherwise the token would still be there and a refresh logs you back in).
     clearToken();
     setIsLoggedIn(false);
-    setCurrentPage('landing');
   };
 
-  // NOTE: if NOT logged in, show the auth pages
-  if (!isLoggedIn) {
-    if (currentPage === 'landing') {
-      return (
-        <LandingPage
-          onLogin={handleLogin}
-          onSignup={handleSignup}
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* NOTE: home — logged in shows the app, logged out shows the landing page */}
+        <Route
+          path="/"
+          element={
+            isLoggedIn ? (
+              <LoggedInApp onLogout={handleLogout} />
+            ) : (
+              <LandingRoute />
+            )
+          }
         />
-      );
-    }
 
-    if (currentPage === 'login') {
-      return (
-        <Login
-          onBack={handleBackToLanding}
-          onLoginSuccess={handleLoginSuccess}
+        {/* NOTE: auth pages. If already logged in, bounce them to home. */}
+        <Route
+          path="/login"
+          element={
+            isLoggedIn ? <Navigate to="/" /> : <LoginRoute onLoginSuccess={handleLoginSuccess} />
+          }
         />
-      );
-    }
-
-    if (currentPage === 'signup') {
-      return (
-        <Signup
-          onBack={handleBackToLanding}
-          onSignupSuccess={handleSignupSuccess}
+        <Route
+          path="/signup"
+          element={
+            isLoggedIn ? <Navigate to="/" /> : <SignupRoute onSignupSuccess={handleSignupSuccess} />
+          }
         />
-      );
-    }
-  }
 
-  // NOTE: logged in — header, log out button, and HoopLab.
+        {/* NOTE: account recovery pages — always reachable (you're locked out). */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/forgot-username" element={<ForgotUsername />} />
+
+        {/* NOTE: any unknown URL just goes home. */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+// ----------------------------------------------------------------------------
+// Small wrapper components so each page can use the router's navigate().
+// (useNavigate only works INSIDE the router, so we wrap here.)
+// ----------------------------------------------------------------------------
+
+function LandingRoute() {
+  const navigate = useNavigate();
+  return (
+    <LandingPage
+      onLogin={() => navigate('/login')}
+      onSignup={() => navigate('/signup')}
+    />
+  );
+}
+
+function LoginRoute({ onLoginSuccess }) {
+  const navigate = useNavigate();
+  return (
+    <Login
+      onBack={() => navigate('/')}
+      onLoginSuccess={onLoginSuccess}
+      onForgotPassword={() => navigate('/forgot-password')}
+      onForgotUsername={() => navigate('/forgot-username')}
+    />
+  );
+}
+
+function SignupRoute({ onSignupSuccess }) {
+  const navigate = useNavigate();
+  return (
+    <Signup
+      onBack={() => navigate('/')}
+      onSignupSuccess={onSignupSuccess}
+    />
+  );
+}
+
+function LoggedInApp({ onLogout }) {
   return (
     <div className="App">
-
       <div style={topBarStyle}>
-        <button style={logoutBtnStyle} onClick={handleLogout}>
+        <button style={logoutBtnStyle} onClick={onLogout}>
           Log Out
         </button>
       </div>
-
       <HoopLab />
     </div>
   );

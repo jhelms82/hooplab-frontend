@@ -137,3 +137,62 @@ export async function createSession(playerId, date, focus, shots) {
   }
   return session;
 }
+
+// ============================================================================
+// ACCOUNT RECOVERY — these don't need a login token (you're locked out!).
+// They call the password-reset / forgot-username endpoints we built.
+// ============================================================================
+
+// ---- request a password-reset email ----
+// NOTE: returns the backend's message object ({ message: "..." }).
+export async function requestPasswordReset(email) {
+  const res = await fetch(`${API_URL}/password-reset/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    console.log("API error:", res.status, text);
+    throw new Error("Request failed");
+  }
+  return res.json();
+}
+
+// ---- set a new password using the uid + token from the email link ----
+export async function confirmPasswordReset(uid, token, password) {
+  const res = await fetch(`${API_URL}/password-reset-confirm/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ uid, token, password }),
+  });
+  if (!res.ok) {
+    // NOTE: the backend sends a helpful message (bad token, weak password).
+    // Pull it out so the page can show the real reason.
+    let msg = "This reset link is invalid or has expired.";
+    try {
+      const data = await res.json();
+      if (data.error) msg = data.error;
+    } catch (e) {
+      // ignore — use the default message
+    }
+    console.log("API error:", res.status, msg);
+    throw new Error(msg);
+  }
+  return res.json();
+}
+
+// ---- request a "here's your username" email ----
+export async function forgotUsername(email) {
+  const res = await fetch(`${API_URL}/forgot-username/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    console.log("API error:", res.status, text);
+    throw new Error("Request failed");
+  }
+  return res.json();
+}

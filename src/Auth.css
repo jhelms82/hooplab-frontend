@@ -1,6 +1,6 @@
 /* ============================================================================
    Auth.css — shared styles for the Login and Signup pages.
-   Themed to match the HoopLab landing: gold/green, glass card, faded hoop.
+   Themed to match the PureSwish landing: gold/green, glass card, faded hoop.
    Both Login.js and Signup.js import this one file.
    ============================================================================ */
 .auth-page {
@@ -112,6 +112,27 @@
   transition: all 0.3s; padding: 0.5rem;
 }
 .back-btn:hover { color: var(--gold); transform: translateX(-5px); }
+
+/* ===== Account-recovery links (Forgot password? · Forgot username?) ===== */
+.auth-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.auth-link {
+  background: none;
+  border: none;
+  color: var(--gold);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+.auth-link:hover { color: #fff; }
+.auth-link-divider { color: rgba(255, 255, 255, 0.4); }
 
 /* responsive */
 @media (max-width: 600px) {
