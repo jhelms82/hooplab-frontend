@@ -7,6 +7,29 @@ import { getPlayers, createPlayer, getSessions, createSession } from "../../api"
 // NOTE: these come from api.js — they talk to the Django backend (with the
 // login token attached automatically). This replaces the old localStorage.
 
+// ============================================================================
+// Spinner — a small spinning ring shown while the server cold-starts.
+// NOTE: Render's FREE backend goes to sleep after ~15 min idle. The first
+// visitor after that waits ~50s while it wakes. We inject a tiny @keyframes
+// here so the spinner works without touching the CSS file.
+// ============================================================================
+function Spinner() {
+  return (
+    <>
+      <style>{`@keyframes hl-spin { to { transform: rotate(360deg); } }`}</style>
+      <div
+        style={{
+          width: 38, height: 38, margin: "18px auto",
+          border: "4px solid rgba(255,255,255,0.18)",
+          borderTopColor: "#fdcb6e",
+          borderRadius: "50%",
+          animation: "hl-spin 0.8s linear infinite",
+        }}
+      />
+    </>
+  );
+}
+
 function HoopLab() {
   const [tab, setTab] = useState("log");
 
@@ -14,6 +37,7 @@ function HoopLab() {
   const [playerId, setPlayerId] = useState(null); // which player we're tracking
   const [sessions, setSessions] = useState([]);
   const [loadingData, setLoadingData] = useState(true); // true while first load runs
+  const [waking, setWaking] = useState(false);          // true once we detect a cold start
   const [errorMsg, setErrorMsg] = useState("");
 
   // ---- current in-progress session ----
@@ -23,33 +47,59 @@ function HoopLab() {
   const [focus, setFocus] = useState([]);
 
   // ---- on load: find (or create) the player, then load their sessions ----
+  // NOTE: now with retry. If the very first request fails (server asleep),
+  // we flip into "waking" mode and quietly retry a few times — the first
+  // request wakes the server, a later retry succeeds. Only if EVERY retry
+  // fails do we show a real error.
   useEffect(() => {
-    async function loadEverything() {
-      try {
-        // NOTE: ask the backend which players this account has.
-        let players = await getPlayers();
+    let cancelled = false; // guard so we don't set state after unmount
 
-        // NOTE: brand-new account with no player yet? create one using the
-        // name we stashed at signup (fall back to "My Player").
-        if (players.length === 0) {
-          const name = localStorage.getItem("hooplab_playername") || "My Player";
-          const newPlayer = await createPlayer(name);
-          players = [newPlayer];
+    async function attemptLoad() {
+      const MAX_ATTEMPTS = 6;
+      const RETRY_DELAY = 5000; // 5s between tries (~25s of patience total)
+
+      for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+        try {
+          // NOTE: ask the backend which players this account has.
+          let players = await getPlayers();
+          if (cancelled) return;
+
+          // NOTE: brand-new account with no player yet? create one using the
+          // name we stashed at signup (fall back to "My Player").
+          if (players.length === 0) {
+            const name = localStorage.getItem("hooplab_playername") || "My Player";
+            const newPlayer = await createPlayer(name);
+            players = [newPlayer];
+          }
+
+          const id = players[0].id; // use the first player for now
+          const loaded = await getSessions(id);
+          if (cancelled) return;
+
+          // success — fill in the data and stop the loading screen
+          setPlayerId(id);
+          setSessions(loaded);
+          setLoadingData(false);
+          return;
+        } catch (err) {
+          if (cancelled) return;
+          // a failure here usually means the server is still waking up
+          setWaking(true);
+          if (attempt < MAX_ATTEMPTS) {
+            await new Promise((r) => setTimeout(r, RETRY_DELAY));
+          } else {
+            // out of retries — show a real (but friendly) error
+            setErrorMsg("Server is taking longer than usual. Please refresh in a moment.");
+            setLoadingData(false);
+          }
         }
-
-        const id = players[0].id; // use the first player for now
-        setPlayerId(id);
-
-        // NOTE: load that player's saved sessions from the database.
-        const loaded = await getSessions(id);
-        setSessions(loaded);
-      } catch (err) {
-        setErrorMsg("Couldn't load your data. Is the backend running?");
-      } finally {
-        setLoadingData(false);
       }
     }
-    loadEverything();
+
+    attemptLoad();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // ---- live totals for the current session ----
@@ -134,14 +184,17 @@ function HoopLab() {
     }
   };
 
-  // ---- while the first load runs, show a simple message ----
+  // ---- while the first load runs, show a loading / waking-up screen ----
   if (loadingData) {
     return (
       <div className="hooplab">
         <header className="hl-header">
           <div className="hl-logo">🏀 PureSwish</div>
-          <div className="hl-tagline">Loading…</div>
+          <div className="hl-tagline">
+            {waking ? "Waking up the server… give it a few seconds 🏀" : "Loading…"}
+          </div>
         </header>
+        {waking && <Spinner />}
       </div>
     );
   }
