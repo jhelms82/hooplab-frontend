@@ -1,4 +1,4 @@
-import { SPOTS } from "./Constants";
+import { SPOTS, CATEGORIES } from "./Constants";
 import { sumSpots, fmtDate, currentStreak } from "./Helpers";
 import Court from "./Court";
 import TrendChart from "./TrendChart";
@@ -66,6 +66,19 @@ function ProgressTab({ sessions }) {
     })
   );
 
+  // ---- roll the per-spot totals up into shot-type CATEGORIES ----
+  // NOTE: each spot knows its own category (see Constants.js), so we just add
+  // each spot's makes/attempts into its category bucket. Pure calculation on
+  // data we already have — no new tracking, no database change.
+  const catAgg = {};
+  CATEGORIES.forEach((c) => (catAgg[c] = { makes: 0, attempts: 0 }));
+  SPOTS.forEach((sp) => {
+    const a = spotAgg[sp.id];
+    if (!a || !catAgg[sp.category]) return;
+    catAgg[sp.category].makes += a.makes;
+    catAgg[sp.category].attempts += a.attempts;
+  });
+
   return (
     <div>
       {/* headline stats */}
@@ -74,6 +87,24 @@ function ProgressTab({ sessions }) {
         <BigStat label="Career FG%" value={`${careerPct}%`} gold />
         <BigStat label="Total Makes" value={totalMakes.toLocaleString()} />
         <BigStat label="Sessions" value={sessions.length} />
+      </div>
+
+      {/* shot-type breakdown */}
+      <div className="hl-chart-panel">
+        <h3 className="hl-panel-title">Breakdown by Shot Type</h3>
+        <div className="hl-stat-grid">
+          {CATEGORIES.map((c) => {
+            const { makes, attempts } = catAgg[c];
+            const pct = attempts ? Math.round((makes / attempts) * 100) : 0;
+            return (
+              <BigStat
+                key={c}
+                label={attempts ? `${c} · ${makes}/${attempts}` : c}
+                value={attempts ? `${pct}%` : "—"}
+              />
+            );
+          })}
+        </div>
       </div>
 
       {/* FG% trend */}

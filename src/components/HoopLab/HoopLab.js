@@ -57,6 +57,7 @@ function HoopLab() {
   const sessionAtt = Object.values(spotData).reduce((s, d) => s + d.attempts, 0);
   const sessionPct = sessionAtt ? Math.round((sessionMakes / sessionAtt) * 100) : 0;
 
+  // ---- TAP MODE: log a single shot (one make or one miss) ----
   const logShot = (made) => {
     if (!selectedSpot) return;
     setSpotData((prev) => {
@@ -66,6 +67,28 @@ function HoopLab() {
         [selectedSpot]: {
           makes: cur.makes + (made ? 1 : 0),
           attempts: cur.attempts + 1,
+        },
+      };
+    });
+  };
+
+  // ---- QUICK SET MODE: log a whole set at once (e.g. "made 8 of 10") ----
+  // NOTE: this adds `made` makes and `total` attempts to the selected spot in
+  // a SINGLE state update. It writes to the same spotData as logShot, so the
+  // chart/goal/totals all treat a set exactly like that many individual taps.
+  const logSet = (made, total) => {
+    if (!selectedSpot) return;
+    // NOTE: defensive guards — whole numbers, can't make more than you took.
+    const m = Math.max(0, Math.floor(made));
+    const t = Math.max(0, Math.floor(total));
+    if (t === 0 || m > t) return;
+    setSpotData((prev) => {
+      const cur = prev[selectedSpot] || { makes: 0, attempts: 0 };
+      return {
+        ...prev,
+        [selectedSpot]: {
+          makes: cur.makes + m,
+          attempts: cur.attempts + t,
         },
       };
     });
@@ -149,7 +172,7 @@ function HoopLab() {
         <LogTab
           date={date} setDate={setDate}
           spotData={spotData} selectedSpot={selectedSpot} setSelectedSpot={setSelectedSpot}
-          logShot={logShot} undoSpot={undoSpot}
+          logShot={logShot} logSet={logSet} undoSpot={undoSpot}
           sessionMakes={sessionMakes} sessionAtt={sessionAtt} sessionPct={sessionPct}
           focus={focus} toggleFocus={toggleFocus} saveSession={saveSession}
         />
