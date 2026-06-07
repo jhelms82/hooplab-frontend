@@ -24,6 +24,12 @@ const CUSTOM_CSS = `
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255,255,255,0.08);
   }
+  .ps-topbar--split { justify-content: space-between; }
+  .ps-topbar--bare {
+    background: transparent; border-bottom: none;
+    backdrop-filter: none; -webkit-backdrop-filter: none;
+  }
+  .ps-topbar-logo { height: 42px; width: auto; display: block; }
   .ps-acct { position: relative; }
   .ps-acct-btn {
     display: flex; align-items: center; gap: 9px;
@@ -392,6 +398,7 @@ function HoopLab({ onLogout }) {
   const [loadingData, setLoadingData] = useState(true);
   const [waking, setWaking] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [headerStyle, setHeaderStyle] = useState(1); // TEMP: 1 = logo in bar, 2 = hero + bare bar
 
   // ---- athlete dialogs ----
   const [athleteModalOpen, setAthleteModalOpen] = useState(false);
@@ -579,26 +586,56 @@ function HoopLab({ onLogout }) {
     <div className="hooplab">
       <style>{CUSTOM_CSS}</style>
 
-      {/* top bar with the account / athlete menu */}
-      <div className="ps-topbar">
-        <AccountMenu
-          players={players}
-          playerId={playerId}
-          onSelect={selectPlayer}
-          onAdd={openAdd}
-          onEdit={openEdit}
-          onDelete={(p) => setDeleteTarget(p)}
-          onLogout={onLogout}
-        />
+      {/* TEMP comparison toggle — floats bottom-center; remove once you choose */}
+      <div style={{
+        position: "fixed", bottom: 14, left: "50%", transform: "translateX(-50%)",
+        zIndex: 9999, display: "flex", gap: 6,
+        background: "rgba(0,0,0,0.55)", padding: 6, borderRadius: 10,
+        backdropFilter: "blur(6px)",
+      }}>
+        <button onClick={() => setHeaderStyle(1)} style={{
+          padding: "6px 12px", borderRadius: 7, fontWeight: 700, fontSize: "0.78rem", cursor: "pointer",
+          border: headerStyle === 1 ? "2px solid #ffd700" : "1px solid rgba(255,255,255,0.25)",
+          background: headerStyle === 1 ? "rgba(255,215,0,0.18)" : "transparent",
+          color: headerStyle === 1 ? "#ffd700" : "rgba(255,255,255,0.75)",
+        }}>Header 1</button>
+        <button onClick={() => setHeaderStyle(2)} style={{
+          padding: "6px 12px", borderRadius: 7, fontWeight: 700, fontSize: "0.78rem", cursor: "pointer",
+          border: headerStyle === 2 ? "2px solid #ffd700" : "1px solid rgba(255,255,255,0.25)",
+          background: headerStyle === 2 ? "rgba(255,215,0,0.18)" : "transparent",
+          color: headerStyle === 2 ? "#ffd700" : "rgba(255,255,255,0.75)",
+        }}>Header 2</button>
       </div>
 
-      <header className="hl-header">
-        <img
-          src="/PureSwish_Logo_Transparent.png"
-          alt="PureSwish"
-          style={{ maxWidth: '400px', width: '100%', height: 'auto', display: 'block', margin: '0 auto' }}
-        />
-      </header>
+      {headerStyle === 1 ? (
+        /* OPTION 1 — logo in the bar (left) + account menu (right), no big hero */
+        <div className="ps-topbar ps-topbar--split">
+          <img className="ps-topbar-logo" src="/PureSwish_Logo_Transparent.png" alt="PureSwish" />
+          <AccountMenu
+            players={players} playerId={playerId}
+            onSelect={selectPlayer} onAdd={openAdd} onEdit={openEdit}
+            onDelete={(p) => setDeleteTarget(p)} onLogout={onLogout}
+          />
+        </div>
+      ) : (
+        /* OPTION 2 — transparent bar (menu only) + big hero logo below */
+        <>
+          <div className="ps-topbar ps-topbar--bare">
+            <AccountMenu
+              players={players} playerId={playerId}
+              onSelect={selectPlayer} onAdd={openAdd} onEdit={openEdit}
+              onDelete={(p) => setDeleteTarget(p)} onLogout={onLogout}
+            />
+          </div>
+          <header className="hl-header">
+            <img
+              src="/PureSwish_Logo_Transparent.png"
+              alt="PureSwish"
+              style={{ maxWidth: '400px', width: '100%', height: 'auto', display: 'block', margin: '0 auto' }}
+            />
+          </header>
+        </>
+      )}
       {errorMsg && <p style={{ textAlign: "center", color: "#ff7675" }}>{errorMsg}</p>}
 
       <div className="hl-tabs">
