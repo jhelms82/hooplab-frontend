@@ -101,35 +101,15 @@ function SignupRoute({ onSignupSuccess }) {
   );
 }
 
+// NOTE: the logged-in app. The Log Out control now lives INSIDE HoopLab's
+// top-bar account menu (cleaner than a floating button), so we just hand the
+// logout function down to it.
 function LoggedInApp({ onLogout }) {
   return (
     <div className="App">
-      <div style={topBarStyle}>
-        <button style={logoutBtnStyle} onClick={onLogout}>
-          Log Out
-        </button>
-      </div>
-      <HoopLab />
+      <HoopLab onLogout={onLogout} />
     </div>
   );
 }
-
-const topBarStyle = {
-  display: 'flex',
-  justifyContent: 'flex-end',
-  padding: '1rem',
-  maxWidth: 700,
-  margin: '0 auto',
-};
-const logoutBtnStyle = {
-  padding: '0.7rem 1.2rem',
-  borderRadius: 10,
-  border: '2px solid rgba(255, 255, 255, 0.3)',
-  background: 'transparent',
-  color: 'rgba(255, 255, 255, 0.85)',
-  fontWeight: 700,
-  cursor: 'pointer',
-  textTransform: 'uppercase',
-};
 
 export default App;

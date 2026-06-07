@@ -29,9 +29,11 @@
 }
 
 /* ---- header ---- */
+/* NOTE: tightened top padding so the logo sits closer to the top bar and
+   tabs (less dead space up top). */
 .hl-header {
   text-align: center;
-  padding: 1rem;
+  padding: 0.25rem 1rem 0.75rem;
 }
 .hl-logo {
   font-size: 2rem; font-weight: 900; color: var(--gold);

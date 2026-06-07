@@ -123,6 +123,18 @@ export async function createPlayer(name) {
     body: JSON.stringify({ name }),
   });
 }
+// NOTE: rename an athlete (PATCH only sends the field we're changing).
+export async function updatePlayer(id, name) {
+  return authFetch(`/players/${id}/`, {
+    method: "PATCH",
+    body: JSON.stringify({ name }),
+  });
+}
+// NOTE: delete an athlete. The backend cascade-deletes their sessions + shots,
+// so this is permanent — the UI confirms before calling it.
+export async function deletePlayer(id) {
+  return authFetch(`/players/${id}/`, { method: "DELETE" });
+}
 
 // ---- SESSIONS ----
 export async function getSessions(playerId) {
