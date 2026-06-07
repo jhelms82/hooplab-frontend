@@ -39,6 +39,30 @@ export function clearToken() {
   localStorage.removeItem("hooplab_token_time");
 }
 
+// NOTE: pulls a human-readable message out of a Django REST error response.
+// DRF returns validation errors shaped like { field: ["message"] } — e.g.
+// { email: ["An account with that email already exists."] }. This digs out
+// the first useful message so the UI can show the REAL reason.
+async function extractError(res, fallback) {
+  try {
+    const data = await res.json();
+    if (typeof data === "string") return data;
+    if (data.detail) return data.detail;
+    // check the most relevant fields first, then any field
+    for (const key of ["email", "username", "password"]) {
+      if (data[key]) return Array.isArray(data[key]) ? data[key][0] : String(data[key]);
+    }
+    const firstKey = Object.keys(data)[0];
+    if (firstKey) {
+      const v = data[firstKey];
+      return Array.isArray(v) ? v[0] : String(v);
+    }
+  } catch (e) {
+    // not JSON — fall through to the fallback
+  }
+  return fallback;
+}
+
 // ---- SIGN UP: create an account, get a token back ----
 export async function signup(username, password, email) {
   const res = await fetch(`${API_URL}/signup/`, {
@@ -46,7 +70,12 @@ export async function signup(username, password, email) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password, email }),
   });
-  if (!res.ok) throw new Error("Signup failed");
+  if (!res.ok) {
+    // NOTE: surface the backend's actual reason (email taken, username taken,
+    // weak password, etc.) instead of a generic message.
+    const msg = await extractError(res, "Could not create account. Please try again.");
+    throw new Error(msg);
+  }
   const data = await res.json();
   return data.token;
 }

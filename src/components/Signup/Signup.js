@@ -35,8 +35,9 @@ function Signup({ onBack, onSignupSuccess }) {
     e.preventDefault();
     setError('');
 
-    // NOTE: all fields filled?
-    if (!formData.username || !formData.password || !formData.playerName) {
+    // NOTE: all fields filled? (email is now required — an account needs it
+    // so the user can reset their password / recover their username later.)
+    if (!formData.username || !formData.email || !formData.password || !formData.playerName) {
       setError('Please fill in all fields.');
       return;
     }
@@ -61,7 +62,9 @@ function Signup({ onBack, onSignupSuccess }) {
       localStorage.setItem('hooplab_playername', formData.playerName);
       onSignupSuccess();
     } catch (err) {
-      setError('Could not create account. That username may be taken.');
+      // NOTE: signup() now throws the backend's REAL reason (email already
+      // registered, username taken, etc.), so show that instead of a guess.
+      setError(err.message || 'Could not create account. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -99,6 +102,7 @@ function Signup({ onBack, onSignupSuccess }) {
               placeholder="you@example.com"
               value={formData.email}
               onChange={handleChange}
+              required
             />
           </div>
 

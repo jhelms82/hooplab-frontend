@@ -34,7 +34,8 @@ function HoopLab() {
   const [tab, setTab] = useState("log");
 
   // ---- backend data ----
-  const [playerId, setPlayerId] = useState(null); // which player we're tracking
+  const [players, setPlayers] = useState([]);      // ALL athletes on this account
+  const [playerId, setPlayerId] = useState(null);  // the one we're viewing now
   const [sessions, setSessions] = useState([]);
   const [loadingData, setLoadingData] = useState(true); // true while first load runs
   const [waking, setWaking] = useState(false);          // true once we detect a cold start
@@ -45,6 +46,15 @@ function HoopLab() {
   const [spotData, setSpotData] = useState({});
   const [selectedSpot, setSelectedSpot] = useState(null);
   const [focus, setFocus] = useState([]);
+
+  // NOTE: clears whatever's being logged right now. Used when switching/adding
+  // an athlete so one kid's in-progress shots never land on another.
+  const clearInProgress = () => {
+    setSpotData({});
+    setSelectedSpot(null);
+    setFocus([]);
+    setDate(todayISO());
+  };
 
   // ---- on load: find (or create) the player, then load their sessions ----
   // NOTE: now with retry. If the very first request fails (server asleep),
@@ -61,22 +71,23 @@ function HoopLab() {
       for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
         try {
           // NOTE: ask the backend which players this account has.
-          let players = await getPlayers();
+          let list = await getPlayers();
           if (cancelled) return;
 
           // NOTE: brand-new account with no player yet? create one using the
           // name we stashed at signup (fall back to "My Player").
-          if (players.length === 0) {
+          if (list.length === 0) {
             const name = localStorage.getItem("hooplab_playername") || "My Player";
             const newPlayer = await createPlayer(name);
-            players = [newPlayer];
+            list = [newPlayer];
           }
 
-          const id = players[0].id; // use the first player for now
+          const id = list[0].id; // start on the first athlete
           const loaded = await getSessions(id);
           if (cancelled) return;
 
           // success — fill in the data and stop the loading screen
+          setPlayers(list);
           setPlayerId(id);
           setSessions(loaded);
           setLoadingData(false);
@@ -101,6 +112,36 @@ function HoopLab() {
       cancelled = true;
     };
   }, []);
+
+  // ---- switch to a different athlete ----
+  const selectPlayer = async (id) => {
+    if (id === playerId) return;
+    setPlayerId(id);
+    clearInProgress();           // don't carry one athlete's shots to another
+    setTab("log");
+    try {
+      const loaded = await getSessions(id);
+      setSessions(loaded);
+    } catch (err) {
+      setErrorMsg("Couldn't load that athlete's sessions. Try refreshing.");
+    }
+  };
+
+  // ---- add a new athlete to this account ----
+  const addAthlete = async () => {
+    const name = window.prompt("New athlete's name:");
+    if (!name || !name.trim()) return;
+    try {
+      const newPlayer = await createPlayer(name.trim());
+      setPlayers((prev) => [...prev, newPlayer]);
+      setPlayerId(newPlayer.id);
+      setSessions([]);           // brand-new athlete has no sessions yet
+      clearInProgress();
+      setTab("log");
+    } catch (err) {
+      alert("Couldn't add that athlete. Please try again.");
+    }
+  };
 
   // ---- live totals for the current session ----
   const sessionMakes = Object.values(spotData).reduce((s, d) => s + d.makes, 0);
@@ -159,7 +200,7 @@ function HoopLab() {
   const toggleFocus = (f) =>
     setFocus((cur) => (cur.includes(f) ? cur.filter((x) => x !== f) : [...cur, f]));
 
-  // ---- save the session TO THE BACKEND ----
+  // ---- save the session TO THE BACKEND (for the CURRENT athlete) ----
   const saveSession = async () => {
     if (sessionAtt === 0) {
       alert("Log at least one shot before saving.");
@@ -169,15 +210,12 @@ function HoopLab() {
       // NOTE: send the session + its shots to the database.
       await createSession(playerId, date, focus.join(", "), spotData);
 
-      // NOTE: reload sessions from the backend so the Progress tab is fresh.
+      // NOTE: reload THIS athlete's sessions so the Progress tab is fresh.
       const loaded = await getSessions(playerId);
       setSessions(loaded);
 
       // reset the form for the next session
-      setSpotData({});
-      setSelectedSpot(null);
-      setFocus([]);
-      setDate(todayISO());
+      clearInProgress();
       setTab("progress");
     } catch (err) {
       alert("Couldn't save the session. Check that the backend is running.");
@@ -199,6 +237,22 @@ function HoopLab() {
     );
   }
 
+  // ---- inline styles for the athlete picker bar ----
+  const athleteBar = {
+    display: "flex", alignItems: "center", gap: "8px", justifyContent: "center",
+    flexWrap: "wrap", maxWidth: 700, margin: "0 auto 6px", padding: "0 1rem",
+  };
+  const athleteLabel = { color: "rgba(255,255,255,0.7)", fontWeight: 600, fontSize: "0.9rem" };
+  const athleteSelect = {
+    padding: "8px 10px", borderRadius: 8, fontWeight: 700, fontSize: "0.95rem",
+    background: "rgba(0,0,0,0.25)", color: "#fff",
+    border: "1px solid rgba(255,255,255,0.25)",
+  };
+  const addAthleteBtn = {
+    padding: "8px 12px", borderRadius: 8, fontWeight: 700, cursor: "pointer",
+    border: "2px solid #fdcb6e", background: "rgba(253,203,110,0.15)", color: "#fdcb6e",
+  };
+
   return (
     <div className="hooplab">
       <header className="hl-header">
@@ -211,6 +265,21 @@ function HoopLab() {
       {errorMsg && (
         <p style={{ textAlign: "center", color: "#ff7675" }}>{errorMsg}</p>
       )}
+
+      {/* athlete picker — switch between kids, or add a new one */}
+      <div style={athleteBar}>
+        <label style={athleteLabel}>Athlete:</label>
+        <select
+          style={athleteSelect}
+          value={playerId || ""}
+          onChange={(e) => selectPlayer(Number(e.target.value))}
+        >
+          {players.map((p) => (
+            <option key={p.id} value={p.id}>{p.name}</option>
+          ))}
+        </select>
+        <button style={addAthleteBtn} onClick={addAthlete}>+ Add Athlete</button>
+      </div>
 
       <div className="hl-tabs">
         <button className={"hl-tab" + (tab === "log" ? " is-active" : "")} onClick={() => setTab("log")}>
