@@ -33,9 +33,9 @@ export const SPOTS = [
 
   // ---- MID-RANGE (inside the arc) ----
   { id: "lbm",  label: "Left Baseline (Midrange)",  short: "LBM", x: 80,  y: 56,  three: false, category: "Midrange" },
-  { id: "le",   label: "Left Wing (Midrange)",  short: "LWM", x: 100, y: 120, three: false, category: "Midrange" },
+  { id: "le",   label: "Left Wing (Midrange)",  short: "LWM", x: 86,  y: 130, three: false, category: "Midrange" },
   { id: "tkm",  label: "Top of Key (Midrange)", short: "TKM", x: 150, y: 170, three: false, category: "Midrange" },  // top-of-key pull-up, between FT and the arc
-  { id: "re",   label: "Right Wing (Midrange)", short: "RWM", x: 200, y: 120, three: false, category: "Midrange" },
+  { id: "re",   label: "Right Wing (Midrange)", short: "RWM", x: 214, y: 130, three: false, category: "Midrange" },
   { id: "rbm",  label: "Right Baseline (Midrange)", short: "RBM", x: 220, y: 56,  three: false, category: "Midrange" },
 
   // ---- FREE THROW (its own category) ----
