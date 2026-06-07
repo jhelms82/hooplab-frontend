@@ -32,11 +32,11 @@ export const SPOTS = [
   { id: "rc3",  label: "Right Corner 3", short: "RC3", x: 278, y: 46,  three: true,  category: "3PT" },  // moved out to the corner
 
   // ---- MID-RANGE (inside the arc) ----
-  { id: "lbm",  label: "Left Baseline (Mid)",  short: "LBM", x: 80,  y: 56,  three: false, category: "Midrange" },
-  { id: "le",   label: "Left Elbow (Mid)",     short: "LE",  x: 112, y: 104, three: false, category: "Midrange" },
-  { id: "tkm",  label: "Top of Key (Mid)",     short: "TKM", x: 150, y: 170, three: false, category: "Midrange" },  // NEW: top-of-key pull-up, between FT and the arc
-  { id: "re",   label: "Right Elbow (Mid)",    short: "RE",  x: 188, y: 104, three: false, category: "Midrange" },
-  { id: "rbm",  label: "Right Baseline (Mid)", short: "RBM", x: 220, y: 56,  three: false, category: "Midrange" },
+  { id: "lbm",  label: "Left Baseline (Midrange)",  short: "LBM", x: 80,  y: 56,  three: false, category: "Midrange" },
+  { id: "le",   label: "Left Wing (Midrange)",  short: "LWM", x: 100, y: 120, three: false, category: "Midrange" },
+  { id: "tkm",  label: "Top of Key (Midrange)", short: "TKM", x: 150, y: 170, three: false, category: "Midrange" },  // top-of-key pull-up, between FT and the arc
+  { id: "re",   label: "Right Wing (Midrange)", short: "RWM", x: 200, y: 120, three: false, category: "Midrange" },
+  { id: "rbm",  label: "Right Baseline (Midrange)", short: "RBM", x: 220, y: 56,  three: false, category: "Midrange" },
 
   // ---- FREE THROW (its own category) ----
   { id: "ft",   label: "Free Throw",     short: "FT",  x: 150, y: 132, three: false, category: "Free Throw" },
