@@ -27,7 +27,10 @@ function Court({ spotData = {}, spotAgg = {}, selectedSpot, onSelect, mode }) {
       <circle cx="150" cy="126" r="34" className="hl-court-line" />
       <line x1="132" y1="26" x2="168" y2="26" className="hl-court-board" />
       <circle cx="150" cy="38" r="7" className="hl-court-hoop" />
-      <path d="M 30 6 L 30 70 A 130 130 0 0 0 270 70 L 270 6" className="hl-court-line" />
+      {/* 3-POINT LINE — extended deeper so the top-of-key midrange (TKM) sits
+          INSIDE the arc and only the top-of-key three (TOP) is beyond it.
+          Straight corner segments run down to y=78, then a deep arc. */}
+      <path d="M 28 6 L 28 78 A 123 123 0 0 0 272 78 L 272 6" className="hl-court-line" />
 
       {/* draw every shooting spot by looping over the shared SPOTS data */}
       {SPOTS.map((sp) => {

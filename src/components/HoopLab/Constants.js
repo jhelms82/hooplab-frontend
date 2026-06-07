@@ -26,9 +26,9 @@ export const CATEGORIES = ["3PT", "Midrange", "Free Throw", "Finishing"];
 export const SPOTS = [
   // ---- THREE-POINTERS (behind the arc) ----
   { id: "lc3",  label: "Left Corner 3",  short: "LC3", x: 22,  y: 46,  three: true,  category: "3PT" },  // moved out to the corner
-  { id: "lw3",  label: "Left Wing 3",    short: "LW3", x: 62,  y: 140, three: true,  category: "3PT" },  // moved behind the arc
+  { id: "lw3",  label: "Left Wing 3",    short: "LW3", x: 62,  y: 165, three: true,  category: "3PT" },  // moved out to sit outside the deeper arc
   { id: "top3", label: "Top of Key 3",   short: "TOP", x: 150, y: 208, three: true,  category: "3PT" },
-  { id: "rw3",  label: "Right Wing 3",   short: "RW3", x: 238, y: 140, three: true,  category: "3PT" },  // moved behind the arc
+  { id: "rw3",  label: "Right Wing 3",   short: "RW3", x: 238, y: 165, three: true,  category: "3PT" },  // moved out to sit outside the deeper arc
   { id: "rc3",  label: "Right Corner 3", short: "RC3", x: 278, y: 46,  three: true,  category: "3PT" },  // moved out to the corner
 
   // ---- MID-RANGE (inside the arc) ----
