@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./HoopLab.css";
 import { todayISO } from "./Helpers";
 import LogTab from "./LogTab";
@@ -30,6 +30,145 @@ function Spinner() {
   );
 }
 
+// ============================================================================
+// AddAthleteModal — a polished in-page dialog for adding a new athlete.
+// Matches the app's dark + gold look. Handles Enter to submit, Escape /
+// click-outside to close, autofocus, a busy state, and inline errors.
+// All styling is injected here so no CSS file needs editing.
+// ============================================================================
+function AddAthleteModal({ open, onClose, onAdd }) {
+  const [name, setName] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const inputRef = useRef(null);
+
+  // NOTE: when the modal opens, reset it and focus the input.
+  useEffect(() => {
+    if (open) {
+      setName("");
+      setErr("");
+      setBusy(false);
+      const t = setTimeout(() => inputRef.current && inputRef.current.focus(), 60);
+      return () => clearTimeout(t);
+    }
+  }, [open]);
+
+  // NOTE: Escape key closes the modal.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  const submit = async () => {
+    const trimmed = name.trim();
+    if (!trimmed) { setErr("Please enter a name."); return; }
+    setBusy(true);
+    setErr("");
+    try {
+      await onAdd(trimmed); // parent does the createPlayer; throws on failure
+      onClose();
+    } catch (e) {
+      setErr("Couldn't add that athlete. Please try again.");
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="hl-modal-backdrop" onClick={onClose}>
+      <style>{`
+        .hl-modal-backdrop {
+          position: fixed; inset: 0; z-index: 1000;
+          display: flex; align-items: center; justify-content: center; padding: 20px;
+          background: rgba(8, 12, 20, 0.72);
+          backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+          animation: hl-modal-fade 0.18s ease-out;
+        }
+        @keyframes hl-modal-fade { from { opacity: 0; } to { opacity: 1; } }
+        .hl-modal-card {
+          width: 100%; max-width: 380px; box-sizing: border-box;
+          background: linear-gradient(180deg, #1b2230 0%, #141a26 100%);
+          border: 1px solid rgba(253, 203, 110, 0.25); border-radius: 18px;
+          padding: 28px 24px 22px; text-align: center;
+          box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+          animation: hl-modal-pop 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        @keyframes hl-modal-pop {
+          from { opacity: 0; transform: translateY(12px) scale(0.96); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .hl-modal-emoji {
+          font-size: 28px; width: 56px; height: 56px; margin: 0 auto 14px;
+          display: flex; align-items: center; justify-content: center; border-radius: 50%;
+          background: rgba(253, 203, 110, 0.12); border: 1px solid rgba(253, 203, 110, 0.3);
+        }
+        .hl-modal-title {
+          margin: 0 0 4px; font-size: 1.35rem; font-weight: 800; color: #fff; letter-spacing: 0.2px;
+        }
+        .hl-modal-sub { margin: 0 0 18px; font-size: 0.9rem; color: rgba(255,255,255,0.55); }
+        .hl-modal-input {
+          width: 100%; box-sizing: border-box; padding: 13px 14px;
+          font-size: 1rem; font-weight: 600; color: #fff; background: rgba(0,0,0,0.3);
+          border: 1.5px solid rgba(255,255,255,0.15); border-radius: 11px; outline: none;
+          transition: border-color 0.15s, box-shadow 0.15s; text-align: center;
+        }
+        .hl-modal-input::placeholder { color: rgba(255,255,255,0.35); font-weight: 500; }
+        .hl-modal-input:focus {
+          border-color: #fdcb6e; box-shadow: 0 0 0 3px rgba(253, 203, 110, 0.18);
+        }
+        .hl-modal-err { margin-top: 10px; font-size: 0.82rem; color: #ff7675; }
+        .hl-modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .hl-modal-btn {
+          flex: 1; padding: 12px; border-radius: 11px; font-weight: 700; font-size: 0.95rem;
+          cursor: pointer; transition: transform 0.1s, filter 0.15s, background 0.15s;
+        }
+        .hl-modal-btn:active { transform: translateY(1px); }
+        .hl-modal-btn:disabled { opacity: 0.6; cursor: default; }
+        .hl-modal-cancel {
+          background: transparent; color: rgba(255,255,255,0.7);
+          border: 1.5px solid rgba(255,255,255,0.2);
+        }
+        .hl-modal-cancel:hover:not(:disabled) { background: rgba(255,255,255,0.06); }
+        .hl-modal-add {
+          background: linear-gradient(180deg, #fdcb6e, #f0b94d); color: #1a1207; border: none;
+          box-shadow: 0 6px 16px rgba(253, 203, 110, 0.3);
+        }
+        .hl-modal-add:hover:not(:disabled) { filter: brightness(1.05); }
+      `}</style>
+
+      {/* stop clicks inside the card from closing the modal */}
+      <div className="hl-modal-card" onClick={(e) => e.stopPropagation()}>
+        <div className="hl-modal-emoji">🏀</div>
+        <h3 className="hl-modal-title">Add Athlete</h3>
+        <p className="hl-modal-sub">Track a new player's shooting workouts.</p>
+
+        <input
+          ref={inputRef}
+          className="hl-modal-input"
+          placeholder="Athlete's name"
+          value={name}
+          maxLength={40}
+          onChange={(e) => setName(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
+        />
+        {err && <div className="hl-modal-err">{err}</div>}
+
+        <div className="hl-modal-actions">
+          <button className="hl-modal-btn hl-modal-cancel" onClick={onClose} disabled={busy}>
+            Cancel
+          </button>
+          <button className="hl-modal-btn hl-modal-add" onClick={submit} disabled={busy}>
+            {busy ? "Adding…" : "Add Athlete"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function HoopLab() {
   const [tab, setTab] = useState("log");
 
@@ -40,6 +179,7 @@ function HoopLab() {
   const [loadingData, setLoadingData] = useState(true); // true while first load runs
   const [waking, setWaking] = useState(false);          // true once we detect a cold start
   const [errorMsg, setErrorMsg] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);    // add-athlete dialog
 
   // ---- current in-progress session ----
   const [date, setDate] = useState(todayISO());
@@ -127,20 +267,14 @@ function HoopLab() {
     }
   };
 
-  // ---- add a new athlete to this account ----
-  const addAthlete = async () => {
-    const name = window.prompt("New athlete's name:");
-    if (!name || !name.trim()) return;
-    try {
-      const newPlayer = await createPlayer(name.trim());
-      setPlayers((prev) => [...prev, newPlayer]);
-      setPlayerId(newPlayer.id);
-      setSessions([]);           // brand-new athlete has no sessions yet
-      clearInProgress();
-      setTab("log");
-    } catch (err) {
-      alert("Couldn't add that athlete. Please try again.");
-    }
+  // ---- add a new athlete (called by the modal; throws on failure) ----
+  const handleAddAthlete = async (name) => {
+    const newPlayer = await createPlayer(name);
+    setPlayers((prev) => [...prev, newPlayer]);
+    setPlayerId(newPlayer.id);
+    setSessions([]);             // brand-new athlete has no sessions yet
+    clearInProgress();
+    setTab("log");
   };
 
   // ---- live totals for the current session ----
@@ -278,7 +412,7 @@ function HoopLab() {
             <option key={p.id} value={p.id}>{p.name}</option>
           ))}
         </select>
-        <button style={addAthleteBtn} onClick={addAthlete}>+ Add Athlete</button>
+        <button style={addAthleteBtn} onClick={() => setModalOpen(true)}>+ Add Athlete</button>
       </div>
 
       <div className="hl-tabs">
@@ -301,6 +435,13 @@ function HoopLab() {
       ) : (
         <ProgressTab sessions={sessions} />
       )}
+
+      {/* the polished add-athlete dialog */}
+      <AddAthleteModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onAdd={handleAddAthlete}
+      />
     </div>
   );
 }
