@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import "./HoopLab.css";
-import { todayISO } from "./Helpers";
+import { todayISO, sumSpots, currentStreak } from "./Helpers";
 import LogTab from "./LogTab";
 import ProgressTab from "./ProgressTab";
 import {
@@ -30,6 +30,16 @@ const CUSTOM_CSS = `
     backdrop-filter: none; -webkit-backdrop-filter: none;
   }
   .ps-topbar-logo { height: 42px; width: auto; display: block; }
+  .ps-statstrip { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+  .ps-stat {
+    display: flex; flex-direction: column; align-items: center;
+    background: rgba(0,0,0,0.3); border: 1px solid rgba(255,215,0,0.22);
+    border-radius: 12px; padding: 8px 18px; min-width: 80px;
+  }
+  .ps-stat-val { font-size: 1.35rem; font-weight: 900; font-family: "Impact", sans-serif; color: #fff; line-height: 1.05; }
+  .ps-stat-gold { color: #ffd700; }
+  .ps-stat-unit { font-size: 0.8rem; }
+  .ps-stat-lbl { font-size: 0.62rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
   .ps-acct { position: relative; }
   .ps-acct-btn {
     display: flex; align-items: center; gap: 9px;
@@ -398,7 +408,6 @@ function HoopLab({ onLogout }) {
   const [loadingData, setLoadingData] = useState(true);
   const [waking, setWaking] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [headerStyle, setHeaderStyle] = useState(1); // TEMP: 1 = logo in bar, 2 = hero + bare bar
 
   // ---- athlete dialogs ----
   const [athleteModalOpen, setAthleteModalOpen] = useState(false);
@@ -520,6 +529,12 @@ function HoopLab({ onLogout }) {
   const sessionAtt = Object.values(spotData).reduce((s, d) => s + d.attempts, 0);
   const sessionPct = sessionAtt ? Math.round((sessionMakes / sessionAtt) * 100) : 0;
 
+  // ---- career summary for the header stat strip (current athlete) ----
+  const careerMakes = sessions.reduce((s, ses) => s + sumSpots(ses, "makes"), 0);
+  const careerAtt = sessions.reduce((s, ses) => s + sumSpots(ses, "attempts"), 0);
+  const careerPct = careerAtt ? Math.round((careerMakes / careerAtt) * 100) : 0;
+  const streak = currentStreak(sessions);
+
   const logShot = (made) => {
     if (!selectedSpot) return;
     setSpotData((prev) => {
@@ -586,56 +601,37 @@ function HoopLab({ onLogout }) {
     <div className="hooplab">
       <style>{CUSTOM_CSS}</style>
 
-      {/* TEMP comparison toggle — floats bottom-center; remove once you choose */}
-      <div style={{
-        position: "fixed", bottom: 14, left: "50%", transform: "translateX(-50%)",
-        zIndex: 9999, display: "flex", gap: 6,
-        background: "rgba(0,0,0,0.55)", padding: 6, borderRadius: 10,
-        backdropFilter: "blur(6px)",
-      }}>
-        <button onClick={() => setHeaderStyle(1)} style={{
-          padding: "6px 12px", borderRadius: 7, fontWeight: 700, fontSize: "0.78rem", cursor: "pointer",
-          border: headerStyle === 1 ? "2px solid #ffd700" : "1px solid rgba(255,255,255,0.25)",
-          background: headerStyle === 1 ? "rgba(255,215,0,0.18)" : "transparent",
-          color: headerStyle === 1 ? "#ffd700" : "rgba(255,255,255,0.75)",
-        }}>Header 1</button>
-        <button onClick={() => setHeaderStyle(2)} style={{
-          padding: "6px 12px", borderRadius: 7, fontWeight: 700, fontSize: "0.78rem", cursor: "pointer",
-          border: headerStyle === 2 ? "2px solid #ffd700" : "1px solid rgba(255,255,255,0.25)",
-          background: headerStyle === 2 ? "rgba(255,215,0,0.18)" : "transparent",
-          color: headerStyle === 2 ? "#ffd700" : "rgba(255,255,255,0.75)",
-        }}>Header 2</button>
+      {/* transparent top bar — just the account menu, no box */}
+      <div className="ps-topbar ps-topbar--bare">
+        <AccountMenu
+          players={players} playerId={playerId}
+          onSelect={selectPlayer} onAdd={openAdd} onEdit={openEdit}
+          onDelete={(p) => setDeleteTarget(p)} onLogout={onLogout}
+        />
       </div>
 
-      {headerStyle === 1 ? (
-        /* OPTION 1 — logo in the bar (left) + account menu (right), no big hero */
-        <div className="ps-topbar ps-topbar--split">
-          <img className="ps-topbar-logo" src="/PureSwish_Logo_Transparent.png" alt="PureSwish" />
-          <AccountMenu
-            players={players} playerId={playerId}
-            onSelect={selectPlayer} onAdd={openAdd} onEdit={openEdit}
-            onDelete={(p) => setDeleteTarget(p)} onLogout={onLogout}
-          />
-        </div>
-      ) : (
-        /* OPTION 2 — transparent bar (menu only) + big hero logo below */
-        <>
-          <div className="ps-topbar ps-topbar--bare">
-            <AccountMenu
-              players={players} playerId={playerId}
-              onSelect={selectPlayer} onAdd={openAdd} onEdit={openEdit}
-              onDelete={(p) => setDeleteTarget(p)} onLogout={onLogout}
-            />
+      <header className="hl-header">
+        <img
+          src="/PureSwish_Logo_Transparent.png"
+          alt="PureSwish"
+          style={{ maxWidth: '320px', width: '100%', height: 'auto', display: 'block', margin: '0 auto' }}
+        />
+        {/* season summary chips for the current athlete — fills the header */}
+        <div className="ps-statstrip">
+          <div className="ps-stat">
+            <span className="ps-stat-val">{streak}<span className="ps-stat-unit">d</span></span>
+            <span className="ps-stat-lbl">🔥 Streak</span>
           </div>
-          <header className="hl-header">
-            <img
-              src="/PureSwish_Logo_Transparent.png"
-              alt="PureSwish"
-              style={{ maxWidth: '400px', width: '100%', height: 'auto', display: 'block', margin: '0 auto' }}
-            />
-          </header>
-        </>
-      )}
+          <div className="ps-stat">
+            <span className="ps-stat-val ps-stat-gold">{careerAtt ? careerPct + "%" : "—"}</span>
+            <span className="ps-stat-lbl">Career FG%</span>
+          </div>
+          <div className="ps-stat">
+            <span className="ps-stat-val">{careerMakes.toLocaleString()}</span>
+            <span className="ps-stat-lbl">Total Makes</span>
+          </div>
+        </div>
+      </header>
       {errorMsg && <p style={{ textAlign: "center", color: "#ff7675" }}>{errorMsg}</p>}
 
       <div className="hl-tabs">
