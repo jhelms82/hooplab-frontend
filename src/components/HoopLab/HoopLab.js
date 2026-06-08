@@ -30,6 +30,9 @@ const CUSTOM_CSS = `
     backdrop-filter: none; -webkit-backdrop-filter: none;
   }
   .ps-topbar-logo { height: 42px; width: auto; display: block; }
+  .ps-greeting { text-align: left; }
+  .ps-greeting-label { font-size: 0.62rem; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 1.5px; }
+  .ps-greeting-date { font-size: 0.92rem; color: #fff; font-weight: 700; margin-top: 2px; }
   .ps-statstrip { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
   .ps-stat {
     display: flex; flex-direction: column; align-items: center;
@@ -534,6 +537,7 @@ function HoopLab({ onLogout }) {
   const careerAtt = sessions.reduce((s, ses) => s + sumSpots(ses, "attempts"), 0);
   const careerPct = careerAtt ? Math.round((careerMakes / careerAtt) * 100) : 0;
   const streak = currentStreak(sessions);
+  const todayLabel = new Date().toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
 
   const logShot = (made) => {
     if (!selectedSpot) return;
@@ -601,8 +605,13 @@ function HoopLab({ onLogout }) {
     <div className="hooplab">
       <style>{CUSTOM_CSS}</style>
 
-      {/* transparent top bar — just the account menu, no box */}
-      <div className="ps-topbar ps-topbar--bare">
+      {/* top bar — greeting + date on the left, account menu on the right;
+          transparent (no box) and both ends filled so nothing floats alone */}
+      <div className="ps-topbar ps-topbar--bare ps-topbar--split">
+        <div className="ps-greeting">
+          <div className="ps-greeting-label">Welcome back</div>
+          <div className="ps-greeting-date">{todayLabel}</div>
+        </div>
         <AccountMenu
           players={players} playerId={playerId}
           onSelect={selectPlayer} onAdd={openAdd} onEdit={openEdit}
